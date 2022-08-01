@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="copyright" content="AlgoFace, Inc. 2019">
+    <title>AlgoFace</title>
+    <script src="/helpers/identify-ua.js"></script>
+    <script src="/helpers/camera-controller.js"></script>
+  </head>
+  <body>
+    <div id="root">
+      <h1>AlgoFace Makeup AR-tist JS SDK Demo - Test Camera</h1>
+      <br/>
+      <a href="/index.html">home</a> 
+      <br/>
+      <!-- CAMERA CONTROL -->
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.start()">CAMERA START</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.play()">VIDEO PLAY</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.pause()">VIDEO PAUSE</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.stop()">CAMERA STOP</button>
+      <br/>
+      <div><b>CAMERA START</b> : starts the camera</div>
+      <div><b>CAMERA STOP</b> : stops the camera</div>
+      <div><b>VIDEO PLAY</b> : plays a paused video, should be used after camera starts</div>
+      <div><b>VIDEO PAUSE</b> : paused the live video, should be used after camera starts</div>
+      <br/>
+      <!-- BASE/DISPLAY CANVAS -->
+      <canvas style="display: block;" id="test-camera-canvas-0"></canvas>
+    </div>
+  </body>
+  <script>
+      window.CameraController.streamToCanvasId("test-camera-canvas-0");
+      window.CameraController.onEachFrame((frameBuffer)=>{
+        if(!window.frameCount) window.frameCount = 1;
+        console.log(`Frame # ${window.frameCount}`);
+        // console.log(`[${new Date().toLocaleString()}]`,frameBuffer);
+        window.frameCount += 1;
+      });
+      // set 'streamToCanvasId' and 'onEachFrame' methods before calling the start()
+      window.CameraController.start();
+  </script>
+</html>

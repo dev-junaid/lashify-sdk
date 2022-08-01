@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="copyright" content="AlgoFace, Inc. 2019">
+    <title>AlgoFace</title>
+    <script src="/helpers/identify-ua.js"></script>
+    <script src="/helpers/camera-controller.js"></script>
+    <script src="/helpers/pre-vmt.js"></script>
+    <script src="/vmt/vmt.js"></script>
+    <script src="/helpers/post-vmt.js"></script>
+    <script src="/helpers/vmt-helper.js"></script>
+    <style>
+      .color-pallet{
+        width: 30px;
+        height: 30px;
+        margin: 5px;
+        border-radius: 15px;
+        box-shadow: 1px 1px 2px grey;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <h1>AlgoFace Makeup AR-tist JS SDK Demo - Try-On Live</h1>
+      <br/>
+      <a href="/index.html">home</a> 
+      <br/> 
+      <!-- CAMERA CONTROL -->
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.start()">CAMERA START</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.play()">VIDEO PLAY</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.pause()">VIDEO PAUSE</button>
+      <button style="display: inline-flex; margin: 10px;" onClick="window.CameraController.stop()">CAMERA STOP</button>
+      <br/>
+      <div><b>CAMERA START</b> : starts the camera</div>
+      <div><b>CAMERA STOP</b> : stops the camera</div>
+      <div><b>VIDEO PLAY</b> : plays a paused video, should be used after camera starts</div>
+      <div><b>VIDEO PAUSE</b> : paused the live video, should be used after camera starts</div>
+      <br/>
+      <!-- BASE CANVAS -->
+      <canvas style="display: none;" id="tryon-live-canvas-0"></canvas>
+      <!-- DISPLAY CANVAS -->
+      <canvas style="display: block;" id="tryon-live-canvas-1"></canvas>
+      <br/>
+      <div>
+        <button onClick="window.VmtHelper.clearMakeup()">RESET ALL MAKEUP</button>
+        <h3>Foundation</h3>
+        <div style="display: inline-flex;">
+          <div class="color-pallet" onClick="window.VmtHelper.removeFoundation();window.VmtHelper.applyFoundation(247,201,186,0.5)" style="background-color: rgba(247,201,186,0.5);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeFoundation();window.VmtHelper.applyFoundation(240,154,156,0.5)" style="background-color: rgba(240,154,156,0.5);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeFoundation();window.VmtHelper.applyFoundation(237,184,166,0.5)" style="background-color: rgba(237,184,166,0.5);"></div>
+        </div>
+        <h3>Lipstick</h3>
+        <div style="display: inline-flex;">
+          <div class="color-pallet" onClick="window.VmtHelper.removeLipstick();window.VmtHelper.applyLipstick(160,32,47,0.5,0.5,0)" style="background-color: rgba(160,32,47,0.5);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeLipstick();window.VmtHelper.applyLipstick(146,55,40,0.5,0,0,'lipGlitter_2',0.5,'lipShimmer_1',0.75)" style="background-color: rgba(146,55,40,0.5);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeLipstick();window.VmtHelper.applyLipstick(126,34,35,0.5,0,0,'lipGlitter_2',0.5)" style="background-color: rgba(126,34,35,0.5);"></div>
+        </div>
+        <h3>Blush</h3>
+        <div style="display: inline-flex;">
+          <div class="color-pallet" onClick="window.VmtHelper.removeBlush();window.VmtHelper.applyBlush(250,158,145,0.75,'blush_1','blush_shimmer',1)" style="background-color: rgba(250,158,145,0.35);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeBlush();window.VmtHelper.applyBlush(250,102,125,0.75,'blush_3')" style="background-color: rgba(250,102,125,0.35);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeBlush();window.VmtHelper.applyBlush(175,114,92,0.75,'blush_2')" style="background-color: rgba(175,114,92,0.35);"></div>
+        </div>
+        <h3>Eyeshadow</h3>
+        <div style="display: inline-flex;">
+          <div class="color-pallet" onClick="window.VmtHelper.removeEyeshadow();window.VmtHelper.applyEyeshadow(192,130,73,0.65,'eyeshadow_1','eyeshadow_shimmer',0.5)" style="background-color: rgba(192,130,73,0.65);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeEyeshadow();window.VmtHelper.applyEyeshadow(102,173,193,0.9,'eyeshadow_2')" style="background-color: rgba(102,173,193,0.9);"></div>
+          <div class="color-pallet" onClick="window.VmtHelper.removeEyeshadow();window.VmtHelper.applyEyeshadow(20,162,210,0.9,'eyeshadow_1')" style="background-color: rgba(20,162,210,0.9);"></div>
+        </div>
+        <h5>Try more makeup from the browser console</h5>
+        <h5>documentation: <a href="https://algoface-documentation.s3.us-east-2.amazonaws.com/SDK/wasm+sdk/vmt-web-sdk-developer-guide-v1-0-0.html#">link</a></h5>
+      </div>
+    </div>
+  </body>
+  <script>
+      document.addEventListener('vmt_is_ready',()=>{
+        var success = window.VmtHelper.registerCanvases("tryon-live-canvas-0", "tryon-live-canvas-1");
+        if(success){
+          window.VmtHelper.setLive(true);
+          window.CameraController.streamToCanvasId("tryon-live-canvas-0");
+          window.CameraController.onEachFrame(()=>{
+            window.VmtHelper.cycleForLive();
+          });
+          // set 'streamToCanvasId' and 'onEachFrame' methods before calling the start()
+          window.CameraController.start();
+        }
+      });
+  </script>
+</html>
